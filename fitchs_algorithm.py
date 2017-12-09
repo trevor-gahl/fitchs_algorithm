@@ -7,64 +7,87 @@
 
 import sys
 
-seq1 = "ATAGACGACATGGGGACAGCAT"
-seq2 = "TTTAGCATGCGCATATCAGCAATA"
-
-#seq1 = 'AGCACACA'
-#seq2 = 'ACACACTA'
 
 match = 2
 other = -1
 maxScore = 0
 maxPosition = (0, 0)
-
+pairwise_alignment_score = 0
 ########################################
 ## Main method to run local alignment ##
 ########################################
 
+sequence = []
+
+filename = "phylogenyFile.txt"
+
+# open file with extended ascii
+with open("phylogenyFile.txt", 'r', encoding='utf-8') as newFile:
+    data = newFile.readlines()
+    for line in data:
+        line.rstrip('\n')
+        line = line.replace(' ', " ")     # strip out any whitespace
+        sequence.append(line)
+
+distance_matrix = [
+    [0 for col in range(len(sequence))]for row in range(len(sequence))]
+
 
 def main():
     # Sequence input structure
-    sequence = []
 
-    filename = "phylogenyFile.txt"
+    distance_matrix = pairwiseDistanceMatrix(sequence)
+    for i in range(len(distance_matrix)):
+        print(distance_matrix[i])
+    score_sequence, min_sequence = scoreSequence(distance_matrix)
+    print(score_sequence, min_sequence)
 
-    # open file with extended ascii
-    with open("phylogenyFile.txt", 'r', encoding='utf-8') as newFile:
-        data = newFile.readlines()
-        for line in data:
-            line.rstrip('\n')
-            line = line.replace(' ', " ")     # strip out any whitespace
-            sequence.append(line)
 
-    for x in range(len(sequence)):
-        print(sequence[x])
-    rows = len(seq1) + 1
-    cols = len(seq2) + 1
-    score_matrix, start_pos = createScoreMatrix(rows, cols)
-    seq1_aligned, seq2_aligned = traceback(score_matrix, start_pos)
-    assert len(seq1_aligned) == len(
-        seq2_aligned), 'aligned strings are not the same size'
+def pairwiseDistanceMatrix(sequence_list):
+    global seq1
+    global seq2
+    global rows
+    global cols
+    global distance_matrix
+    for x in range(len(sequence_list)):
+        for y in range(len(sequence_list)):
+            # print("iteration")
+            seq1 = sequence_list[x]
+            seq2 = sequence_list[y]
+            '''
+            temp = y + offset
+            if temp >= len(sequence_list):
+                temp = len(sequence_list)
+                # break
+            else:
+                seq2 = sequence_list[temp]
+            '''
+            rows = len(seq1) + 1
+            cols = len(seq2) + 1
+            print(rows, cols)
+            score_matrix, start_pos = createScoreMatrix(rows, cols)
+            distance_score = traceback(score_matrix, start_pos)
+            print(distance_score)
+            distance_matrix[x][y] = distance_score
+        #offset += 1
+    return distance_matrix
 
-# Pretty print the results. The printing follows the format of BLAST results
-# as closely as possible.
-    alignment_str, idents, gaps, mismatches = alignment_string(
-        seq1_aligned, seq2_aligned)
-    alength = len(seq1_aligned)
-    print('\n')
-    print('Identities = {0}/{1} ({2:.1%}), Gaps = {3}/{4} ({5:.1%})'.format(idents,
-                                                                            alength, idents / alength, gaps, alength, gaps / alength))
-    print('\n')
-    for i in range(0, alength, 60):
-        seq1_slice = seq1_aligned[i:i + 60]
-        print('Query  {0:<4}  {1}  {2:<4}'.format(
-            i + 1, seq1_slice, i + len(seq1_slice)))
-        print('             {0}'.format(alignment_str[i:i + 60]))
-        seq2_slice = seq2_aligned[i:i + 60]
-        print('Sbjct  {0:<4}  {1}  {2:<4}'.format(
-            i + 1, seq2_slice, i + len(seq2_slice)))
-        print('\n')
 
+def scoreSequence(d_matrix):
+    score_min = 10000000
+    score_value = 0
+    sc_sequence = []
+    for x in range(len(d_matrix)):
+        for y in range(len(d_matrix)):
+            score_value = score_value + d_matrix[x][y]
+        print(score_value)
+        if score_value < score_min:
+            score_min_index = x
+            score_min = score_value
+        sc_sequence.append(score_value)
+        print(sc_sequence)
+        score_value = 0
+    return sc_sequence, score_min_index
 ###############################################
 ## Creates scoring matrix from input strings ##
 ###############################################
@@ -84,16 +107,10 @@ def createScoreMatrix(rows, cols):
             if curMax > maxScore:
                 maxScore = curMax
                 maxPosition = (i, j)
+
             score_matrix[i][j] = curMax
             # print(similarity)
-    '''
-    print(score_matrix)
-    print(maxScore)
-    print(maxPosition)
-    print(rows, cols)
-    '''
-    print('\nSCORE MATRIX: \n')
-    print_matrix(score_matrix)
+    maxScore = 0
     return score_matrix, maxPosition
 
 #######################################
@@ -103,7 +120,7 @@ def createScoreMatrix(rows, cols):
 
 
 def traceback(score_matrix, start_pos):
-
+    pairwise_alignment_score = 0
     END, DIAG, UP, LEFT = range(4)
     aligned_seq1 = []
     aligned_seq2 = []
@@ -119,17 +136,19 @@ def traceback(score_matrix, start_pos):
             aligned_seq1.append(seq1[x - 1])
             aligned_seq2.append('-')
             x -= 1
+            pairwise_alignment_score += 1
         else:
             aligned_seq1.append('-')
             aligned_seq2.append(seq2[y - 1])
             y -= 1
+            pairwise_alignment_score += 1
 
         move = nextMove(score_matrix, x, y)
 
     aligned_seq1.append(seq1[x - 1])
     aligned_seq2.append(seq1[y - 1])
 
-    return ''.join(reversed(aligned_seq1)), ''.join(reversed(aligned_seq2))
+    return pairwise_alignment_score
 
 ################################################
 ## Determines the next move for the traceback ##
@@ -190,21 +209,6 @@ def alignment_string(aligned_seq1, aligned_seq2):
     # Returns the "alignment" string and the alignment characteristics
     return ''.join(alignment_string), idents, gaps, mismatches
 
-
-def print_matrix(matrix):
-    for row in matrix:
-        for col in row:
-            print '{:4}'.format(col),
-        print
-
-<<<<<<< HEAD
-=======
-with open("phylogenyFile.txt", 'r', encoding='utf-8') as newFile:  # open file with extended ascii
-    for line in newFile:
-        line.rstrip('\n')
-        line = line.replace(' ', " ")     # strip out any whitespace
-        sequence.append(line)
->>>>>>> 6320fa9de5491cb38618ecba9eb432145e116de9
 
 if __name__ == '__main__':
     sys.exit(main())
