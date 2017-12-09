@@ -37,8 +37,8 @@ def main():
     # Sequence input structure
 
     distance_matrix = pairwiseDistanceMatrix(sequence)
-    for i in range(len(distance_matrix)):
-        print(distance_matrix[i])
+    # for i in range(len(distance_matrix)):
+    # print(distance_matrix[i])
     score_sequence, min_sequence = scoreSequence(distance_matrix)
     print(score_sequence, min_sequence)
 
@@ -64,10 +64,10 @@ def pairwiseDistanceMatrix(sequence_list):
             '''
             rows = len(seq1) + 1
             cols = len(seq2) + 1
-            print(rows, cols)
+            #print(rows, cols)
             score_matrix, start_pos = createScoreMatrix(rows, cols)
             distance_score = traceback(score_matrix, start_pos)
-            print(distance_score)
+            # print(distance_score)
             distance_matrix[x][y] = distance_score
         #offset += 1
     return distance_matrix
@@ -80,12 +80,12 @@ def scoreSequence(d_matrix):
     for x in range(len(d_matrix)):
         for y in range(len(d_matrix)):
             score_value = score_value + d_matrix[x][y]
-        print(score_value)
+        # print(score_value)
         if score_value < score_min:
             score_min_index = x
             score_min = score_value
         sc_sequence.append(score_value)
-        print(sc_sequence)
+        # print(sc_sequence)
         score_value = 0
     return sc_sequence, score_min_index
 ###############################################
