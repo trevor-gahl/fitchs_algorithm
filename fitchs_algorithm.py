@@ -197,6 +197,14 @@ def print_matrix(matrix):
             print '{:4}'.format(col),
         print
 
+<<<<<<< HEAD
+=======
+with open("phylogenyFile.txt", 'r', encoding='utf-8') as newFile:  # open file with extended ascii
+    for line in newFile:
+        line.rstrip('\n')
+        line = line.replace(' ', " ")     # strip out any whitespace
+        sequence.append(line)
+>>>>>>> 6320fa9de5491cb38618ecba9eb432145e116de9
 
 if __name__ == '__main__':
     sys.exit(main())
