@@ -6,7 +6,7 @@
 #########################################################################
 
 import sys
-
+import binaryModule as bm
 
 match = 2
 other = -1
@@ -18,7 +18,7 @@ pairwise_alignment_score = 0
 ########################################
 
 sequence = []
-
+score_sequence = []
 filename = "phylogenyFile.txt"
 
 # open file with extended ascii
@@ -41,7 +41,7 @@ def main():
     # print(distance_matrix[i])
     score_sequence, min_sequence = scoreSequence(distance_matrix)
     print(score_sequence, min_sequence)
-
+    print_phylogenyTree(score_sequence)
 
 def pairwiseDistanceMatrix(sequence_list):
     global seq1
@@ -208,7 +208,10 @@ def alignment_string(aligned_seq1, aligned_seq2):
 
     # Returns the "alignment" string and the alignment characteristics
     return ''.join(alignment_string), idents, gaps, mismatches
-
+def print_phylogenyTree(sq):
+ 
+    phTree = bm.convert(sq)
+    bm.pprint(phTree)
 
 if __name__ == '__main__':
     sys.exit(main())
