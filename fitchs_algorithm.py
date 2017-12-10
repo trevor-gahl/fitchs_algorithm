@@ -42,6 +42,14 @@ def main():
     score_sequence, min_sequence = scoreSequence(distance_matrix)
     print(score_sequence, min_sequence)
 
+    printIndexAndScore(sequence, score_sequence)
+
+
+def printIndexAndScore(sequence, score_sequence):
+    for x in range(len(sequence)):
+        print(score_sequence[x])
+        print(sequence[x])
+
 
 def pairwiseDistanceMatrix(sequence_list):
     global seq1
