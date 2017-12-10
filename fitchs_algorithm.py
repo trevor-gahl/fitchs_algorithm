@@ -87,12 +87,12 @@ def compare(a, b):
             print(x, y)
             # Inset logic here
 
-
             ############################################
             ## Calculates the pairwise distance score ##
             ## for all sequences in S                 ##
             ############################################
-'''
+
+
 def pairwiseDistanceMatrix(sequence_list, distance_matrix):
     global seq1
     global seq2
