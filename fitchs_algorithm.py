@@ -26,6 +26,7 @@ def main():
     # Sequence input structure
     sequence, distance_matrix = fileReader(filename)
     # Initialize distance_matrix
+    compare(sequence[1], sequence[2])
     distance_matrix = pairwiseDistanceMatrix(sequence, distance_matrix)
     score_sequence, min_sequence = scoreSequence(distance_matrix)
     print(score_sequence, min_sequence)
@@ -74,6 +75,10 @@ def printIndexAndScore(sequence, score_sequence):
 def compare(a, b):
     for x, y in zip(a, b):
         if x == y:
+            print('equal')
+        else:
+            print('not equal')
+            print(x, y)
             # Inset logic here
 
             ############################################
