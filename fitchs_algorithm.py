@@ -27,7 +27,8 @@ def main():
     # Sequence input structure
     sequence, distance_matrix = fileReader(filename)
     # Initialize distance_matrix
-    compare(sequence[1], sequence[2])
+    output = compare(sequence[1], sequence[2])
+    print(output)
     distance_matrix = pairwiseDistanceMatrix(sequence, distance_matrix)
     score_sequence, min_sequence = scoreSequence(distance_matrix)
     print(score_sequence, min_sequence)
@@ -79,18 +80,22 @@ def printIndexAndScore(sequence, score_sequence):
 
 
 def compare(a, b):
+    notEqual = []
     for x, y in zip(a, b):
         if x == y:
             print('equal')
         else:
             print('not equal')
-            print(x, y)
-            # Inset logic here
+            notEqual.append((x, y))
+    if len(notEqual) < 1:
+        return a
+    else:
+        return notEqual
 
-            ############################################
-            ## Calculates the pairwise distance score ##
-            ## for all sequences in S                 ##
-            ############################################
+        ############################################
+        ## Calculates the pairwise distance score ##
+        ## for all sequences in S                 ##
+        ############################################
 
 
 def pairwiseDistanceMatrix(sequence_list, distance_matrix):
