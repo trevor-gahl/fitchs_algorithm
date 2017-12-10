@@ -49,12 +49,22 @@ def fileReader(filename):
     distance_matrix = [
         [0 for col in range(len(sequence))]for row in range(len(sequence))]
     return sequence, distance_matrix
-
-
+def delta(leftSequence, rightSequence):
+    deltaScore = 0
+    if(leftSequence == rightSequence):
+        deltaScore = 0
+    else:
+        deltaScore = 1
+    print(deltaScore)
+    print("Deltas")
 def printIndexAndScore(sequence, score_sequence):
     for x in range(len(sequence)):
         print(score_sequence[x])
         print(sequence[x])
+        if(x+1<len(sequence)):
+            delta(sequence[x],sequence[x+1])
+        else:
+            print("End of Sequence")
 
 
 ############################################
