@@ -15,6 +15,7 @@ maxPosition = (0, 0)
 pairwise_alignment_score = 0
 sequence = []
 score_sequence = []
+deltaMatrix = []
 filename = "phylogenyFile.txt"
 
 ########################################
@@ -32,7 +33,7 @@ def main():
     print(score_sequence, min_sequence)
     print_phylogenyTree(score_sequence)
     printIndexAndScore(sequence, score_sequence)
-
+    # print_phylogenyTree(deltaMatrix)
 
 #########################################################
 ## Prints out the sequence and the corresponding score ##
@@ -54,12 +55,17 @@ def fileReader(filename):
 
 def delta(leftSequence, rightSequence):
     deltaScore = 0
+
     if(leftSequence == rightSequence):
         deltaScore = 0
     else:
         deltaScore = 1
     print(deltaScore)
-    print("Deltas")
+    # print("Deltas")
+    deltaMatrix.append(deltaScore)
+    '''for x in range(len(deltaMatrix)):
+        print(deltaMatrix[x])
+        '''
 
 
 def printIndexAndScore(sequence, score_sequence):
@@ -81,12 +87,12 @@ def compare(a, b):
             print(x, y)
             # Inset logic here
 
+
             ############################################
             ## Calculates the pairwise distance score ##
             ## for all sequences in S                 ##
             ############################################
-
-
+'''
 def pairwiseDistanceMatrix(sequence_list, distance_matrix):
     global seq1
     global seq2
@@ -107,12 +113,12 @@ def pairwiseDistanceMatrix(sequence_list, distance_matrix):
             '''
             rows = len(seq1) + 1
             cols = len(seq2) + 1
-            #print(rows, cols)
+            # print(rows, cols)
             score_matrix, start_pos = createScoreMatrix(rows, cols)
             distance_score = traceback(score_matrix, start_pos)
             # print(distance_score)
             distance_matrix[x][y] = distance_score
-        #offset += 1
+        # offset += 1
     return distance_matrix
 
 
