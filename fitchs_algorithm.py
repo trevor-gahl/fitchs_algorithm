@@ -84,6 +84,7 @@ def compare(a, b):
     for x, y in zip(a, b):
         if x == y:
             print('equal')
+            notEqual.append((x, y))
         else:
             print('not equal')
             notEqual.append((x, y))
