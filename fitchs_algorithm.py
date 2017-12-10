@@ -13,36 +13,42 @@ other = -1
 maxScore = 0
 maxPosition = (0, 0)
 pairwise_alignment_score = 0
-########################################
-## Main method to run local alignment ##
-########################################
-
 sequence = []
 score_sequence = []
 filename = "phylogenyFile.txt"
 
-# open file with extended ascii
-with open("phylogenyFile.txt", 'r', encoding='utf-8') as newFile:
-    data = newFile.readlines()
-    for line in data:
-        line.rstrip('\n')
-        line = line.replace(' ', " ")     # strip out any whitespace
-        sequence.append(line)
-
-distance_matrix = [
-    [0 for col in range(len(sequence))]for row in range(len(sequence))]
+########################################
+## Main method to run local alignment ##
+########################################
 
 
 def main():
     # Sequence input structure
-
-    distance_matrix = pairwiseDistanceMatrix(sequence)
-    # for i in range(len(distance_matrix)):
-    # print(distance_matrix[i])
+    sequence, distance_matrix = fileReader(filename)
+    # Initialize distance_matrix
+    distance_matrix = pairwiseDistanceMatrix(sequence, distance_matrix)
     score_sequence, min_sequence = scoreSequence(distance_matrix)
     print(score_sequence, min_sequence)
     print_phylogenyTree(score_sequence)
     printIndexAndScore(sequence, score_sequence)
+
+
+#########################################################
+## Prints out the sequence and the corresponding score ##
+#########################################################
+
+
+def fileReader(filename):
+    # open file with extended ascii
+    with open(filename, 'r', encoding='utf-8') as newFile:
+        data = newFile.readlines()
+        for line in data:
+            line.rstrip('\n')
+            line = line.replace(' ', " ")     # strip out any whitespace
+            sequence.append(line)
+    distance_matrix = [
+        [0 for col in range(len(sequence))]for row in range(len(sequence))]
+    return sequence, distance_matrix
 
 
 def printIndexAndScore(sequence, score_sequence):
@@ -51,12 +57,16 @@ def printIndexAndScore(sequence, score_sequence):
         print(sequence[x])
 
 
-def pairwiseDistanceMatrix(sequence_list):
+############################################
+## Calculates the pairwise distance score ##
+## for all sequences in S                 ##
+############################################
+
+def pairwiseDistanceMatrix(sequence_list, distance_matrix):
     global seq1
     global seq2
     global rows
     global cols
-    global distance_matrix
     for x in range(len(sequence_list)):
         for y in range(len(sequence_list)):
             # print("iteration")
@@ -81,6 +91,10 @@ def pairwiseDistanceMatrix(sequence_list):
     return distance_matrix
 
 
+##############################################
+## Creates the sequence of alignment scores ##
+##############################################
+
 def scoreSequence(d_matrix):
     score_min = 10000000
     score_value = 0
@@ -96,6 +110,8 @@ def scoreSequence(d_matrix):
         # print(sc_sequence)
         score_value = 0
     return sc_sequence, score_min_index
+
+
 ###############################################
 ## Creates scoring matrix from input strings ##
 ###############################################
@@ -120,6 +136,7 @@ def createScoreMatrix(rows, cols):
             # print(similarity)
     maxScore = 0
     return score_matrix, maxPosition
+
 
 #######################################
 ## Creates best fit alignment string ##
@@ -216,10 +233,17 @@ def alignment_string(aligned_seq1, aligned_seq2):
 
     # Returns the "alignment" string and the alignment characteristics
     return ''.join(alignment_string), idents, gaps, mismatches
+
+
+######################################
+## Pretty prints the phylogeny tree ##
+######################################
+
 def print_phylogenyTree(sq):
- 
+
     phTree = bm.convert(sq)
     bm.pprint(phTree)
+
 
 if __name__ == '__main__':
     sys.exit(main())
