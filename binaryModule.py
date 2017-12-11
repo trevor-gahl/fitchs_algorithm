@@ -8,15 +8,17 @@ _null = None
 _left_attr = 'left'
 _right_attr = 'right'
 _value_attr = 'value'
+_weight_attr = 'weight'
 
 
 class Node(object):
     """Represents a binary tree node."""
 
-    def __init__(self, value):
+    def __init__(self, value, weight):
         self.__setattr__(_value_attr, value)
         self.__setattr__(_left_attr, _null)
         self.__setattr__(_right_attr, _null)
+        self.__setattr__(_weight_attr, weight)
 
     def __repr__(self):
         return 'Node({})'.format(
@@ -33,11 +35,11 @@ class Node(object):
         return inspect(self)
 
 
-def _new_node(value):
+def _new_node(value, weight):
     """Create and return a new node."""
     if _node_init_func is not None:
         return _node_init_func(value)
-    return (_node_cls or Node)(value)
+    return (_node_cls or Node)(value, weight)
 
 
 def _is_list(obj):
@@ -48,6 +50,11 @@ def _is_list(obj):
 def _is_node(obj):
     """Return True if the object is a node, else False."""
     return isinstance(obj, _node_cls or Node)
+
+
+def _weight_of(node):
+    """Return the weight of the node"""
+    return getattr(node, _weight_attr)
 
 
 def _value_of(node):
@@ -219,21 +226,21 @@ def _build_str(node):
     return new_box, len(new_box[0]), new_root_start, new_root_end
 
 
-def _bst_insert(root, value):
+def _bst_insert(root, value, weight):
     """Insert a node into the BST."""
     depth = 1
     node = root
     while True:
-        if _value_of(node) > value:
+        if _weight_of(node) > weight:
             left_child = _left_of(node)
             if left_child == _null:
-                _add_left(node, _new_node(value))
+                _add_left(node, _new_node(value, weight))
                 break
             node = left_child
         else:
             right_child = _right_of(node)
             if right_child == _null:
-                _add_right(node, _new_node(value))
+                _add_right(node, _new_node(value, weight))
                 break
             node = right_child
         depth += 1
@@ -474,7 +481,7 @@ def inspect(bt):
     min_leaf_depth = 0
     current_depth = -1
     current_nodes = [bt]
-    
+
     while current_nodes:
 
         null_encountered = False
@@ -484,7 +491,7 @@ def inspect(bt):
         for node in current_nodes:
             num_of_children = 0
             node_count += 1
-            node_value = _value_of(node)
+            node_value = _weight_of(node)
             min_value = min(node_value, min_value)
             max_value = max(node_value, max_value)
 
@@ -496,23 +503,23 @@ def inspect(bt):
                     is_left_padded = False
                 elif child == _null and not null_encountered:
                     null_encountered = True
-                    
+
             if left_child == _null and right_child == _null:
                 if min_leaf_depth == 0:
                     min_leaf_depth = current_depth
                 leaf_count += 1
 
             if left_child != _null:
-                if _value_of(left_child) > node_value:
+                if _weight_of(left_child) > node_value:
                     is_descending = False
                     is_bst = False
-                elif _value_of(left_child) < node_value:
+                elif _weight_of(left_child) < node_value:
                     is_ascending = False
                 next_nodes.append(left_child)
-                num_of_children +=1
+                num_of_children += 1
 
             if right_child != _null:
-                if _value_of(right_child) > node_value:
+                if _weight_of(right_child) > node_value:
                     is_descending = False
                 elif _value_of(right_child) < node_value:
                     is_ascending = False

@@ -1,0 +1,11 @@
+from binaryModule import Node, pprint, inspect, _bst_insert, _new_node, _validate_tree
+root = _new_node('abc', 1)
+pprint(root)
+_bst_insert(root, 'cdf', 5)
+_bst_insert(root, 'aca', 3)
+_bst_insert(root, 'cca', 4)
+_bst_insert(root, 'aac', 8)
+pprint(root)
+data = inspect(root)
+print(_validate_tree(root))
+pprint(root)
