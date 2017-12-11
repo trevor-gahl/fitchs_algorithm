@@ -275,7 +275,24 @@ def alignment_string(aligned_seq1, aligned_seq2):
 ######################################
 ## Pretty prints the phylogeny tree ##
 ######################################
+'''
+def makeTree(matrixTree,sequence0):
 
+    for x in range(len(matrixTree)):
+        ourTree.addNode(ourTree.root, matrixTree[x], sequence0[x])
+        print("score and sequence")
+        print(matrixTree[x])
+        print(sequence0[x])
+        print("end score and sequence")
+        print("our tree type ")
+        print(type(ourTree.root) )
+        print( "test tree type")
+        print(type(testTree.root))
+
+    bt.printInorder(ourTree.root)
+
+        makeTree(score_sequence,sequence)
+        '''
 def print_phylogenyTree(sq):
 
     phTree = bm.convert(sq)
