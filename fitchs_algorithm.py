@@ -6,16 +6,19 @@
 #########################################################################
 
 import sys
-import binaryModule as bm
-
+import binaryModule
+import statistics
+from binaryModule import Node, pprint, inspect, _bst_insert, _new_node, _validate_tree, _build_tree, _weight_of, _add_left, _add_right, _build_list, _right_of, _left_of, _value_of, _null
 match = 2
 other = -1
 maxScore = 0
 maxPosition = (0, 0)
 pairwise_alignment_score = 0
 sequence = []
+finalSequence = []
 score_sequence = []
 deltaMatrix = []
+fitchIndex = []
 filename = "phylogenyFile.txt"
 
 ########################################
@@ -26,14 +29,20 @@ filename = "phylogenyFile.txt"
 def main():
     # Sequence input structure
     sequence, distance_matrix = fileReader(filename)
+    for i in range(len(sequence)):
+        finalSequence.append(sequence[i].strip('\n'))
     # Initialize distance_matrix
-    output = compare(sequence[1], sequence[2])
-    print(output)
-    distance_matrix = pairwiseDistanceMatrix(sequence, distance_matrix)
+    #output = compare(finalsequence[1], sequence[2])
+    # print(output)
+    distance_matrix = pairwiseDistanceMatrix(finalSequence, distance_matrix)
     score_sequence, min_sequence = scoreSequence(distance_matrix)
-    print(score_sequence, min_sequence)
-    print_phylogenyTree(score_sequence)
-    printIndexAndScore(sequence, score_sequence)
+    #print(score_sequence, min_sequence)
+    # print_phylogenyTree(score_sequence)
+    #printIndexAndScore(sequence, score_sequence)
+    new_root = buildTree(score_sequence, finalSequence)
+    pprint(new_root)
+    fitchsIndexCreation(new_root)
+    pprint(new_root)
     # print_phylogenyTree(deltaMatrix)
 
 #########################################################
@@ -69,14 +78,66 @@ def delta(leftSequence, rightSequence):
         '''
 
 
-def printIndexAndScore(sequence, score_sequence):
-    for x in range(len(sequence)):
-        print(score_sequence[x])
-        print(sequence[x])
-        if(x + 1 < len(sequence)):
-            delta(sequence[x], sequence[x + 1])
+# def printIndexAndScore(sequence, score_sequence):
+    # for x in range(len(sequence)):
+    # print(score_sequence[x])
+    # print(sequence[x])
+    # if(x + 1 < len(sequence)):
+    #delta(sequence[x], sequence[x + 1])
+    # else:
+    #print("End of Sequence")
+
+
+def buildTree(weights, values):
+    medianValues = list(weights)
+    # print(weights)
+    medianValues.sort()
+    # print(weights)
+    # print(medianValues)
+    if len(medianValues) % 2 == 0:
+        root_value = medianValues[int(len(medianValues) / 2)]
+    else:
+        root_value = statistics.median(medianValues)
+
+    # print(root_value)
+    # print(weights)
+    for x in range(len(weights)):
+        if weights[x] == root_value:
+            root_index = x
         else:
-            print("End of Sequence")
+            continue
+    new_root = _new_node(values[root_index], weights[root_index])
+    for x in range(len(weights)):
+        if x != root_index:
+            _bst_insert(new_root, values[x], weights[x])
+        else:
+            continue
+    return(new_root)
+
+
+def fitchsIndexCreation(root_node):
+    global fitchIndex
+    node = root_node
+    if root_node == _null:
+        return
+    if _left_of(node) == _null and _right_of(node) == _null:
+        return
+    try:
+        test_1 = set(_value_of(_left_of(node)))
+    except:
+        test_1 = set()
+    try:
+        test_2 = set(_value_of(_right_of(node)))
+    except:
+        test_2 = set()
+    inSet = set.intersection(test_1, test_2)
+    if len(inSet) == 0:
+        node.value = set.union(test_1, test_2)
+    else:
+        node.value = inSet
+
+    fitchsIndexCreation(_left_of(node))
+    fitchsIndexCreation(_right_of(node))
 
 
 def compare(a, b):
@@ -156,6 +217,7 @@ def scoreSequence(d_matrix):
 
 def createScoreMatrix(rows, cols):
     global maxScore
+    maxPosition = (0, 0)
     score_matrix = [[0 for col in range(cols)]for row in range(rows)]
 
     for i in range(1, rows):
@@ -168,7 +230,6 @@ def createScoreMatrix(rows, cols):
             if curMax > maxScore:
                 maxScore = curMax
                 maxPosition = (i, j)
-
             score_matrix[i][j] = curMax
             # print(similarity)
     maxScore = 0
@@ -293,10 +354,6 @@ def makeTree(matrixTree,sequence0):
 
         makeTree(score_sequence,sequence)
         '''
-def print_phylogenyTree(sq):
-
-    phTree = bm.convert(sq)
-    bm.pprint(phTree)
 
 
 if __name__ == '__main__':

@@ -131,22 +131,25 @@ def _build_list(root):
     return result
 
 
-def _build_tree(values):
+def _build_tree(values, weights):
     """Build a tree from a list and return its root."""
     if not values:
+        return _null
+    if not weights:
         return _null
 
     nodes = [_null for _ in values]
     if values[0] == _null:
         raise ValueError('Node missing at index 0')
 
-    root = _new_node(values[0])
+    root = _new_node(values[0], weights[0])
     nodes[0] = root
-
+    node = root
     index = 1
     while index < len(values):
         value = values[index]
-        if value != _null:
+        weight = weights[index]
+        if weight != _null:
             parent_index = int((index + 1) / 2) - 1
             parent_node = nodes[parent_index]
             if parent_node == _null:
@@ -154,11 +157,25 @@ def _build_tree(values):
                     'Node missing at index {}'
                     .format(parent_index)
                 )
-            child_node = _new_node(value)
-            if index % 2:  # is odd
-                _add_left(parent_node, child_node)
-            else:
-                _add_right(parent_node, child_node)
+            node = parent_node
+            depth = 1
+            child_node = _new_node(value, weight)
+            while True:
+                if _weight_of(node) > weight:  # is odd
+                    left_child = _left_of(node)
+                    if left_child == _null:
+                        _add_left(node, child_node)
+                        break
+                    node = left_child
+                    _add_left(parent_node, child_node)
+                    print('left')
+                else:
+                    right_child = _right_of(node)
+                    if right_child == _null:
+                        _add_right(node, child_node)
+                        break
+                    node = right_child
+                depth += 1
             nodes[index] = child_node
         index += 1
 
